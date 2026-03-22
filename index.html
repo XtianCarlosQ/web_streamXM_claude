@@ -457,7 +457,7 @@
       border-top:1px solid var(--border);
       display:flex; align-items:center; justify-content:space-between; gap:10px;
     }
-    .price-soles {
+    .price-costo {
       font-family:'Bebas Neue',sans-serif;
       font-size:1.85rem; letter-spacing:1px; line-height:1;
       color:var(--blue-bright);
@@ -678,7 +678,7 @@ themeBtn.addEventListener("click", () => {
 });
 
 /* ── HELPERS ────────────────────────────────────────── */
-function calcSoles(u) {
+function calcCosto(u) {
   if (!u) return null;
   const n = parseFloat(u.replace(/[^0-9.]/g,""));
   return isNaN(n) ? null : (n * TC * GANANCIA).toFixed(0);
@@ -769,9 +769,11 @@ document.addEventListener("keydown", e=>{
 
 /* ── BUILD CARD ─────────────────────────────────────── */
 function buildCard(p) {
-  const soles   = calcSoles(p.precio_usd || p.precio_soles);
+  const costo   = p.costo_usd;
+  const precio_soles = p.precio_soles_streamXM;
+  const precio_USDT  = (precio_soles / TC).toFixed(2);
   const plat    = inferPlatform(p.nombre);
-  const waMsg   = encodeURIComponent(`Hola! Me interesa: ${p.nombre} | Precio: S/ ${soles||"?"}`);
+  const waMsg   = encodeURIComponent(`Hola! Me interesa: ${p.nombre} | Precio: S/ ${precio_soles||"?"}`);
   const waUrl   = `https://wa.me/${WA_NUM}?text=${waMsg}`;
   const inStock = (p.stock ?? 0) > 0;
   const fullChar = [p.descripcion||"", p.condiciones?"\n\n— Condiciones de uso —\n"+p.condiciones:""].join("").trim();
@@ -828,11 +830,10 @@ function buildCard(p) {
     </div>
     <div class="card-footer">
       <div>
-        <div class="price-soles">S/ ${soles||"—"}</div>
+        <div class="price-costo">S/ ${precio_soles||"—"}</div>
         <div class="price-sub">
           ${p.duracion||""}
-          <!--${p.precio_usd?"· "+p.precio_usd:""} -->
-          ${p.precio_usd ? " · $" + (parseFloat(p.precio_usd.replace('$', '')) * GANANCIA*1.01).toFixed(2) + " (USDT)": ""}
+          ${precio_USDT ? " · $" + precio_USDT + " (USDT)": ""}
           
         </div>
       </div>
@@ -912,12 +913,14 @@ document.getElementById("btnClear").addEventListener("click",clearAllFilters);
 /* ── INIT ───────────────────────────────────────────── */
 async function init() {
   try {
-    const res = await fetch("productos_clicstream.json");
+    // const res = await fetch("productos_clicstream.json");
+    const res = await fetch("productos_streamXM_pricing_final.json");
     if (!res.ok) throw new Error();
     const data = await res.json();
     ALL = Array.isArray(data) ? data : (data.productos||[]);
     console.log(`✅ ${ALL.length} productos cargados`);
-  } catch { ALL=[]; console.warn("⚠️ No se encontró productos_clicstream.json"); }
+  // } catch { ALL=[]; console.warn("⚠️ No se encontró productos_clicstream.json"); }
+  } catch { ALL=[]; console.warn("⚠️ No se encontró productos_streamXM_pricing_final.json"); }
   buildPlatFilters(ALL);
   renderGrid();
 }

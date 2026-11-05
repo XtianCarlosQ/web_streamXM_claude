@@ -724,7 +724,7 @@
 
 <script>
 const TC     = 3.5;
-const WA_NUM = "51986295558";
+const WA_NUM = "51964383962";
 
 /* ── THEME ── */
 const html = document.documentElement;
@@ -827,7 +827,7 @@ function buildCard(p) {
   const precio_soles = p.precio_soles_streamXM;
   const precio_USDT  = precio_soles ? (precio_soles / TC).toFixed(2) : null;
   const plat    = inferPlatform(p.nombre);
-  const waMsg   = encodeURIComponent(`Hola! Me interesa: ${p.nombre} | Precio: S/ ${precio_soles||"?"}`);
+  const waMsg   = encodeURIComponent(`Hola, me interesa ${p.nombre}.\nProducto StreamXM #${p.id_producto}`);
   const waUrl   = `https://wa.me/${WA_NUM}?text=${waMsg}`;
   const inStock = (p.stock ?? 0) > 0;
   const fullChar = [
